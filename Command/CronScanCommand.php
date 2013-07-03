@@ -77,14 +77,15 @@ class CronScanCommand extends ContainerAwareCommand
             }
         }
         
-        // Clear any jobs that weren't found
+        // Disable any jobs that weren't found
         if(!$keepDeleted)
         {
             foreach(array_keys($knownJobs) as $deletedJob)
             {
-                $output->writeln("Deleting job: $deletedJob");
+                $output->writeln("Disabling job: $deletedJob");
                 $jobToDelete = $jobRepo->findOneByCommand($deletedJob);
-                $em->remove($jobToDelete);
+                $jobToDelete->setEnabled(false);
+                $em->persist($jobToDelete);
             }
         }
         
